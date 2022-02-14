@@ -276,7 +276,7 @@ int main()
     
 	auto stop_while = high_resolution_clock::now();
     
-    	// get the time of ROI 1 
+    	// get the time of ROI WHILE 
 	auto duration_while = duration_cast<microseconds>(stop_while - start_while);
 	float temp = duration_while.count();
 	cout << "Time taken by " << MAX_ITER << " iterations is: "<< temp << " microseconds" << endl;
