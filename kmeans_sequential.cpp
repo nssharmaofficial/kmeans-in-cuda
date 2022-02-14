@@ -192,7 +192,7 @@ void input_user(std::string* infile_name, int* num, int* k, int* epochs)
         break;
         case 1000: *infile_name = "points_1_000.txt";
         break;
-		case 1024: *infile_name = "points_1024.txt";
+	case 1024: *infile_name = "points_1024.txt";
         break;
         case 10000: *infile_name = "points_10_000.txt";
         break;
@@ -218,16 +218,10 @@ int main()
 	int N, K, MAX_ITER;
 	input_user(&input_file, &N, &K, &MAX_ITER);
 
-	//allocate memory for the data points
+	//allocate memory 
 	float datapoints[D*N] = {0};
-    
-	//allocate memory for the cluster assignments
 	int clust_assn[N] = {0};
-    
-	//allocate memory  for the cluster centroids
 	float centroids[D*N]= {0};
-    
-	//allocate memory for the cluster sizes
 	int clust_sizes[K] = {0};
 	
 	srand(5);
