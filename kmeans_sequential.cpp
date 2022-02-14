@@ -79,7 +79,6 @@ void kMeansCentroidUpdate(float* datapoints, int* clust_assn, float* centroids, 
 }
 
 bool Read_from_file(float* datapoints, std::string input_file = "points_100.txt"){
-	//initalize datapoints
 	
 	FILE* file = fopen(input_file.c_str(), "r");
 	if(file != NULL){
@@ -89,7 +88,7 @@ bool Read_from_file(float* datapoints, std::string input_file = "points_100.txt"
 		{
 			float x, y;
             
-            // break if you will not find a pair
+            		// break if you will not find a pair
 			if(fscanf(file, "%f %f", &x, &y )!= 2){
 				break;
 			}
@@ -109,7 +108,7 @@ bool Read_from_file(float* datapoints, std::string input_file = "points_100.txt"
 // centroid initialization
 bool centroid_init(float* centroids, int k){
 	
-    // save the initialized centroids in a file
+    	// save the initialized centroids in a file
 	std::string input_centr_file;
 
 	if(k==8){
@@ -173,7 +172,7 @@ void write2csv_clust(float* points, int* clust_assn, std::string outfile_name, i
     outfile.open(outfile_name);
     outfile << "x,y,c\n";  // name of the columns
 
-	// writing of the coordinates (even are x's, odd are y's) and their relative cluster.
+    // writing of the coordinates (even are x's, odd are y's) and their relative cluster.
     for(int i = 0; i < size; i++){
         outfile << points[2*i] << "," << points[2*i+1] << "," << clust_assn[i] << "\n";
     }
@@ -218,7 +217,7 @@ int main()
 	int N, K, MAX_ITER;
 	input_user(&input_file, &N, &K, &MAX_ITER);
 
-	//allocate memory 
+	// allocate memory 
 	float datapoints[D*N] = {0};
 	int clust_assn[N] = {0};
 	float centroids[D*N]= {0};
@@ -226,21 +225,21 @@ int main()
 	
 	srand(5);
 
-	//initialize centroids
+	// initialize centroids
 	centroid_init(centroids, K);
 	for(int c=0; c<K; ++c){
 		printf("Initialization of %d centroids: \n", K);
 		printf("(%f, %f)\n", centroids[2*c], centroids[2*c+1]);
 	}
 
-    //initialize datapoints
+    	// initialize datapoints
 	Read_from_file(datapoints, input_file);
 
 	int cur_iter = 0;
 	float time_assignments = 0;     
 	float time_update = 0;
 
-	// ROI1 - while cycle (durations of all epochs)
+	// ROI WHILE - while cycle (durations of all epochs)
 	auto start_while = high_resolution_clock::now();
 	while(cur_iter < MAX_ITER)
 	{
@@ -249,7 +248,7 @@ int main()
 		kMeansClusterAssignment(datapoints, clust_assn, centroids, N, K);
 		auto stop = high_resolution_clock::now();
         
-        // get the time of ROI 2
+       		// get the time of ROI 2
 		auto duration = duration_cast<microseconds>(stop - start);
 		float temp = duration.count();
 		time_assignments = time_assignments + temp;
@@ -267,7 +266,7 @@ int main()
 		kMeansCentroidUpdate(datapoints, clust_assn, centroids, clust_sizes, N, K);
 		auto stop2 = high_resolution_clock::now();
 
-        // get the time of ROI 4
+        	// get the time of ROI 4
 		auto duration2 = duration_cast<microseconds>(stop2 - start2);
 		float temp2 = duration2.count();
 		time_update = time_update + temp2;
@@ -277,21 +276,22 @@ int main()
     
 	auto stop_while = high_resolution_clock::now();
     
-    // get the time of ROI 1 
+    	// get the time of ROI 1 
 	auto duration_while = duration_cast<microseconds>(stop_while - start_while);
 	float temp = duration_while.count();
 	cout << "Time taken by " << MAX_ITER << " iterations is: "<< temp << " microseconds" << endl;
 
-    // the average time of ROI2 during each iteration    
+    	// the average time of ROI2 during each iteration    
 	time_assignments = time_assignments/MAX_ITER;
 	cout << "Time taken by kMeansClusterAssignment: "<< time_assignments << " microseconds" << endl;
     
-    // the average time of ROI4 during each iteration
+    	// the average time of ROI4 during each iteration
 	time_update = time_update/MAX_ITER;	
 	cout << "Time taken by kMeansCentroidUpdate: "<< time_update << " microseconds" << endl;
   
-    // print final centroids
+    	// print final centroids
 	cout<<"N = "<<N<<",K = "<<K<<", MAX_ITER= "<<MAX_ITER<<".\nThe centroids are:\n";
+	
     for(int l=0; l<K; l++){
         cout<<"centroid: " <<l<<": (" <<centroids[2*l]<<", "<<centroids[2*l+1]<<")"<<endl;
     }
