@@ -259,7 +259,7 @@ int main()
 		}
         centroids[2*K] = {0.0};
 
-        // ROI 3 missing in this case because we dont allocate memory
+        	// ROI 3 missing in this case because we dont copy the data from GPU to CPU
         
 		// ROI 4 - centroid update kernel 
 		auto start2 = high_resolution_clock::now();
