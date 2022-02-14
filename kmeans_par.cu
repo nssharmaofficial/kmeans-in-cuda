@@ -68,7 +68,7 @@ __global__ void kMeansCentroidUpdate(float *d_datapoints, int *d_clust_assn, flo
 	//put the datapoints and corresponding cluster assignments in shared memory so that they can be summed by thread 0 later
 	__shared__ float s_datapoints[2 * TPB]; 
 	s_datapoints[2*s_idx]= d_datapoints[2*idx];         // for x coordinates
-    s_datapoints[2*s_idx+1]= d_datapoints[2*idx+1];     // for y coordinates
+    	s_datapoints[2*s_idx+1]= d_datapoints[2*idx+1];     // for y coordinates
 
 	__shared__ int s_clust_assn[TPB];
 	s_clust_assn[s_idx] = d_clust_assn[idx];
@@ -79,20 +79,20 @@ __global__ void kMeansCentroidUpdate(float *d_datapoints, int *d_clust_assn, flo
 	if(s_idx == 0)
 	{
 		float b_clust_datapoint_sums[2*K] = {0};
-        int b_clust_sizes[K] = {0};
+        	int b_clust_sizes[K] = {0};
 
 		for(int j=0; j<blockDim.x; ++j)
 		{
 			if(idx+j<N){
                 
-                // clust_id represents a number of a cluster (0...K)
+                		// clust_id represents a number of a cluster (0...K)
 				int clust_id = s_clust_assn[j];
                 
-                // summation of both of the coordinates within each cluster
+                		// summation of both of the coordinates within each cluster
 				b_clust_datapoint_sums[2*clust_id] += s_datapoints[2*j];        // for x coordinate
 				b_clust_datapoint_sums[2*clust_id+1] += s_datapoints[2*j+1];    // for y coordinate
                 
-                // count the total number of data points within each cluster
+               			// count the total number of data points within each cluster
 				b_clust_sizes[clust_id] += 1;
 			}
 		}
@@ -100,11 +100,11 @@ __global__ void kMeansCentroidUpdate(float *d_datapoints, int *d_clust_assn, flo
 		//Now we add the sums to the global centroids and add the counts to the global counts.
 		for(int z=0; z < K; ++z)
 		{
-            // adding the block centroids to a global centroid for each k centroid
+            		// adding the block centroids to a global centroid for each k centroid
 			atomicAdd(&d_centroids[2*z],b_clust_datapoint_sums[2*z]);       // for x coordinate
-            atomicAdd(&d_centroids[2*z+1],b_clust_datapoint_sums[2*z+1]);   // for y coordinate 
+           		atomicAdd(&d_centroids[2*z+1],b_clust_datapoint_sums[2*z+1]);   // for y coordinate 
 
-            // counting num of points inside cluster
+            		// counting num of points inside cluster
 			atomicAdd(&d_clust_sizes[z],b_clust_sizes[z]);
 		}
 	}
@@ -136,7 +136,7 @@ bool Read_from_file(float *h_datapoints, std::string input_file = "points_100.tx
 		{
 			float x, y;
             
-            // break if you will not find a pair
+            		// break if you will not find a pair
 			if(fscanf(file, "%f %f", &x, &y )!= 2){
 				break;
 			}
@@ -220,7 +220,7 @@ void write2csv_clust(float* points, int* clust_assn,
     outfile.open( outfile_name );
     outfile << "x,y,c\n";  // name of the columns
 
-	// writing of the coordinates (even are x's, odd are y's) and their relative cluster
+    // writing of the coordinates (even are x's, odd are y's) and their relative cluster
     for(int i = 0; i < size; i++){
         outfile << points[2*i] << "," << points[2*i+1] << "," << clust_assn[i] << "\n";
     }
@@ -237,7 +237,7 @@ void input_user(std::string* infile_name, int* num, int* epochs)
         break;
         case 1000: *infile_name = "points_1_000.txt";
         break;
-		case 1024: *infile_name = "points_1024.txt";
+	case 1024: *infile_name = "points_1024.txt";
         break;
         case 10000: *infile_name = "points_10_000.txt";
         break;
@@ -301,7 +301,7 @@ int main()
 	cudaMemcpy(d_clust_sizes, h_clust_sizes, K*sizeof(int), cudaMemcpyHostToDevice);
 	auto stop_ROI1 = high_resolution_clock::now();
     
-    // get the time of ROI 1
+    	// get the time of ROI 1
 	auto duration_ROI1 = duration_cast<microseconds>(stop_ROI1 - start_ROI1);
 	float temp = duration_ROI1.count();
 	cout << "Time taken by transfering centroids, datapoints and cluster's sizes from host to device is : "<< temp << " microseconds" << endl;
@@ -322,7 +322,7 @@ int main()
 		kMeansClusterAssignment<<<(N+TPB-1)/TPB,TPB>>>(d_datapoints, d_clust_assn, d_centroids, N);
 		auto stop = high_resolution_clock::now();
         
-        // get the time of ROI 2
+        	// get the time of ROI 2
 		auto duration = duration_cast<microseconds>(stop - start);
 		float temp = duration.count();
 		time_assignments = time_assignments + temp;
@@ -333,7 +333,7 @@ int main()
 		cudaMemcpy(h_clust_assn, d_clust_assn, N*sizeof(int), cudaMemcpyDeviceToHost);
 		auto stop_ROI3 = high_resolution_clock::now();
         
-        // get the time of ROI 3
+        	// get the time of ROI 3
 		auto duration_ROI3 = duration_cast<microseconds>(stop_ROI3 - start_ROI3);
 		float temp_ROI3 = duration_ROI3.count();
 		time_copy_by_device = time_copy_by_device + temp_ROI3;
@@ -347,7 +347,7 @@ int main()
 		kMeansCentroidUpdate<<<(N+TPB-1)/TPB,TPB>>>(d_datapoints, d_clust_assn, d_centroids, d_clust_sizes, N);
 		auto stop2 = high_resolution_clock::now();
 
-        // get the time of ROI 4
+        	// get the time of ROI 4
 		auto duration2 = duration_cast<microseconds>(stop2 - start2);
 		float temp2 = duration2.count();
 		time_update = time_update + temp2;
@@ -357,24 +357,24 @@ int main()
     
 	auto stop_while = high_resolution_clock::now();
     
-    // get the time of ROI WHILE
+    	// get the time of ROI WHILE
 	auto duration_while = duration_cast<microseconds>(stop_while - start_while);
 	float temp_while = duration_while.count();
 	cout << "Time taken by " << MAX_ITER << " iterations is: "<< temp_while << " microseconds" << endl;
 
-    // the average time of ROI2 during each iteration 
+    	// the average time of ROI2 during each iteration 
 	time_assignments = time_assignments/MAX_ITER;
 	cout << "Time taken by kMeansClusterAssignment: "<< time_assignments << " microseconds" << endl;
 	
-    // the average time of ROI3 during each iteration 
+    	// the average time of ROI3 during each iteration 
 	time_copy_by_device = time_copy_by_device/MAX_ITER;
 	cout << "Time taken by transfering centroids and assignments from the device to the host: "<< time_copy_by_device << " microseconds" << endl;
 
-    // the average time of ROI4 during each iteration 
+    	// the average time of ROI4 during each iteration 
 	time_update = time_update/MAX_ITER;	
 	cout << "Time taken by kMeansCentroidUpdate: "<< time_update << " microseconds" << endl;
   
-    // print final centroids
+    	// print final centroids
 	cout<<"N = "<<N<<",K = "<<K<<", MAX_ITER= "<<MAX_ITER<<".\nThe centroids are:\n";
     for(int l=0; l<K; l++){
         cout<<"centroid: " <<l<<": (" <<h_centroids[2*l]<<", "<<h_centroids[2*l+1]<<")"<<endl;
