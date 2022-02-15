@@ -88,7 +88,7 @@ __global__ void kMeansCentroidUpdate(float *d_datapoints, int *d_clust_assn, flo
                 		// clust_id represents a number of a cluster (0...K)
 				int clust_id = s_clust_assn[j];
                 
-                		// summation of both of the coordinates within each cluster
+                		// summation of both of the coordinates within each block for each cluster
 				b_clust_datapoint_sums[2*clust_id] += s_datapoints[2*j];        // for x coordinate
 				b_clust_datapoint_sums[2*clust_id+1] += s_datapoints[2*j+1];    // for y coordinate
                 
