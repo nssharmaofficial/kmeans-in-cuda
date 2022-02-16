@@ -171,6 +171,8 @@ void input_user(std::string* infile_name, int* num, int* k, int* epochs)
         break;
         case 100000: *infile_name = "points_100_000.txt";
         break;
+	case 1000000: *infile_name = "points_1_000_000.txt";
+        break;
         default: *infile_name = "points_100.txt";
         cout << "Attention: Dataset with " << (n) 
         << " points does not exist!\nThe \"points_100.txt\" dataset will be chosen instead by default.\n\n";        
