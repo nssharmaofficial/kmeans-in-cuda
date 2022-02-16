@@ -54,25 +54,25 @@ void kMeansCentroidUpdate(float* datapoints, int* clust_assn, float* centroids, 
 
 {  
     float clust_datapoint_sums[2*K] = {0};
-    for(int j=0; j<N; ++j)
+    for(int idx=0; idx<N; ++idx)
     {
         // clust_id represents a number of a cluster (0...K)
-        int clust_id = clust_assn[j];
+        int clust_id = clust_assn[idx];
       
-        // summation of both of the coordinates within each cluster
-        clust_datapoint_sums[2*clust_id] += datapoints[2*j];          // for x coordinates
-        clust_datapoint_sums[2*clust_id+1] += datapoints[2*j+1];      // for y coordinates
+        // summation of both of the coordinates with each cluster
+        clust_datapoint_sums[2*clust_id] += datapoints[2*idx];          // for x coordinates
+        clust_datapoint_sums[2*clust_id+1] += datapoints[2*idx+1];      // for y coordinates
       
         // count the total number of data points within each cluster
         clust_sizes[clust_id] += 1;
     }
 
 	// arithmetic mean to get the current updated centroid for each cluster
-	for(int idx = 0; idx < K; idx++){
+	for(int c = 0; c < K; idx++){
 		if(clust_sizes[idx]) // to avoid division by zero
 		{
-			centroids[2*idx] = clust_datapoint_sums[2*idx]/clust_sizes[idx];      // new x coordinate of updated centroid
-			centroids[2*idx+1] = clust_datapoint_sums[2*idx+1]/clust_sizes[idx];  // new y coordinate of updated centroid
+			centroids[2*c] = clust_datapoint_sums[2*c]/clust_sizes[c];      // new x coordinate of updated centroid
+			centroids[2*c+1] = clust_datapoint_sums[2*c+1]/clust_sizes[c];  // new y coordinate of updated centroid
 		}	
 	}
 
@@ -106,41 +106,14 @@ bool Read_from_file(float* datapoints, std::string input_file = "points_100.txt"
 };
 
 // centroid initialization
-bool centroid_init(float* centroids, int k){
-	
-    	// save the initialized centroids in a file
-	std::string input_centr_file;
-
-	if(k==8){
-		input_centr_file = "init_centroids_8.txt";
-	}else if(k==10){
-		input_centr_file = "init_centroids_10.txt";
-	}else if(k==20){
-		input_centr_file = "init_centroids_20.txt";
-	}else if(k==50){
-		input_centr_file = "init_centroids_50.txt";
-	}
-    
-	FILE* file = fopen(input_centr_file.c_str(), "r");
-	if(file != NULL){
-		int d = 0;
-        while ( !feof(file) )
-		{
-			float x, y;
-            if(fscanf(file, "%f %f", &x, &y )!= 2){
-				break;
-		    }
-            centroids[2*d] = x;
-			centroids[2*d+1] = y;
-			d = d + 1;
-		}
-		fclose(file);
-		return 0;
-
-	}else{
-		cerr<<"Error during opening file \n";
-		return -1;
-	}
+void centroid_init(float* datapoints, float* centroids, int N, int K){
+	for (int c=0; i<K; i++){
+		int temp = (N/K);
+		int idx_r = rand()%temp;
+		
+		// for each cluster choosing randomly the centroid
+		centroids[2*c]= datapoints[(i*temp +idx_r)];
+		centroids[2*c+1] = datapoints[(i*temp +idx_r)+1];
 };
 
 // size is the number of points in the chosen array, 
@@ -225,51 +198,48 @@ int main()
 	
 	srand(5);
 
-	// initialize centroids
-	centroid_init(centroids, K);
+    	// initialize datapoints
+	Read_from_file(datapoints, input_file);
+
+	//initialize centroids
+	centroid_init(datapoints, centroids, N, K);
+	
 	for(int c=0; c<K; ++c){
 		printf("Initialization of %d centroids: \n", K);
 		printf("(%f, %f)\n", centroids[2*c], centroids[2*c+1]);
 	}
-
-    	// initialize datapoints
-	Read_from_file(datapoints, input_file);
-
+	
 	int cur_iter = 0;
 	float time_assignments = 0;     
-	float time_update = 0;
 
 	// ROI WHILE - while cycle (durations of all epochs)
 	auto start_while = high_resolution_clock::now();
 	while(cur_iter < MAX_ITER)
 	{
-		// ROI 2 - cluster assignment
+		// ROI ASSIGNMENT - cluster assignment
 		auto start = high_resolution_clock::now();
 		kMeansClusterAssignment(datapoints, clust_assn, centroids, N, K);
 		auto stop = high_resolution_clock::now();
         
-       		// get the time of ROI 2
+       		// get the time of ROI ASSIGNMENT
 		auto duration = duration_cast<microseconds>(stop - start);
 		float temp = duration.count();
 		time_assignments = time_assignments + temp;
   
-		// initialize back to zero
-		for(int p=0; p<K; p++){
-			clust_sizes[p] = 0;
+		// initialize clust_sizes back to zero
+		for(int c=0; c<K; p++){
+			clust_sizes[c] = 0;
 		}
-        centroids[2*K] = {0.0};
+		
+		// initialize centroids back to zero
+		for(int p=0; p<D*K; p++){
+			centroids[p] = 0.0;
+		}
 
-        	// ROI 3 missing in this case because we dont copy the data from GPU to CPU
+        	// ROI COPY missing in this case because we dont copy the data from GPU to CPU
         
-		// ROI 4 - centroid update kernel 
-		auto start2 = high_resolution_clock::now();
+		// centroid update
 		kMeansCentroidUpdate(datapoints, clust_assn, centroids, clust_sizes, N, K);
-		auto stop2 = high_resolution_clock::now();
-
-        	// get the time of ROI 4
-		auto duration2 = duration_cast<microseconds>(stop2 - start2);
-		float temp2 = duration2.count();
-		time_update = time_update + temp2;
 		
 		cur_iter += 1;
 	}
@@ -281,20 +251,15 @@ int main()
 	float temp = duration_while.count();
 	cout << "Time taken by " << MAX_ITER << " iterations is: "<< temp << " microseconds" << endl;
 
-    	// the average time of ROI2 during each iteration    
+    	// the average time of ROI ASSIGNMENT  
 	time_assignments = time_assignments/MAX_ITER;
 	cout << "Time taken by kMeansClusterAssignment: "<< time_assignments << " microseconds" << endl;
-    
-    	// the average time of ROI4 during each iteration
-	time_update = time_update/MAX_ITER;	
-	cout << "Time taken by kMeansCentroidUpdate: "<< time_update << " microseconds" << endl;
   
     	// print final centroids
 	cout<<"N = "<<N<<",K = "<<K<<", MAX_ITER= "<<MAX_ITER<<".\nThe centroids are:\n";
-	
-    for(int l=0; l<K; l++){
-        cout<<"centroid: " <<l<<": (" <<centroids[2*l]<<", "<<centroids[2*l+1]<<")"<<endl;
-    }
+	for(int l=0; l<K; l++){
+        	cout<<"centroid: " <<l<<": (" <<centroids[2*l]<<", "<<centroids[2*l+1]<<")"<<endl;
+   	}
 
 	// Naming for the output files
 	std::string outfile_points = "./outdir/datapoints.csv";
@@ -306,6 +271,5 @@ int main()
 	write2csv(centroids, outfile_centroids, K);
 	write2csv_clust(datapoints, clust_assn, outfile_clust, N);
 	
-
 	return 0;
 }
