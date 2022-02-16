@@ -68,7 +68,7 @@ void kMeansCentroidUpdate(float* h_datapoints, int* h_clust_assn, float* h_centr
 
 	//Division by size (arithmetic mean) to compute the actual centroids
 	for(int c = 0; c < K; c++){
-		if(h_clust_sizes[idx])
+		if(h_clust_sizes[c])
 		{
 			h_centroids[2*c] = clust_datapoint_sums[2*c]/h_clust_sizes[c]; 
 			h_centroids[2*c+1] = clust_datapoint_sums[2*c+1]/h_clust_sizes[c]; 
@@ -305,7 +305,7 @@ int main()
 	cout << "Time taken by transfering centroids and assignments from the device to the host: "<< time_copy << " microseconds" << endl;
 
   // print the average time of ROI CP during each iteration 
-	time_copy_2 = time_copy2/MAX_ITER;
+	time_copy_2 = time_copy_2/MAX_ITER;
 	cout << "Time taken by transfering centroids and assignments from the device to the host: "<< time_copy_2 << " microseconds" << endl;
   
   // print final centroids
