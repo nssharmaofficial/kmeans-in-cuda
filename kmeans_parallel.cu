@@ -57,21 +57,21 @@ void kMeansCentroidUpdate(float* h_datapoints, int* h_clust_assn, float* h_centr
 
     float clust_datapoint_sums[2*K] = {0};
 
-    for(int idx=0; idx<N; ++idx)
+    for(int j=0; j<N; ++j)
     {
         // clust_id represents a cluster from 1...K
-        int clust_id = h_clust_assn[idx];
-        clust_datapoint_sums[2*clust_id] += h_datapoints[2*idx];
-        clust_datapoint_sums[2*clust_id+1] += h_datapoints[2*idx+1];
+        int clust_id = h_clust_assn[j];
+        clust_datapoint_sums[2*clust_id] += h_datapoints[2*j];
+        clust_datapoint_sums[2*clust_id+1] += h_datapoints[2*j+1];
         h_clust_sizes[clust_id] += 1;
     }
 
 	//Division by size (arithmetic mean) to compute the actual centroids
-	for(int c = 0; c < K; c++){
-		if(h_clust_sizes[c])
+	for(int idx = 0; idx < K; idx++){
+		if(h_clust_sizes[idx])
 		{
-			h_centroids[2*c] = clust_datapoint_sums[2*c]/h_clust_sizes[c]; 
-			h_centroids[2*c+1] = clust_datapoint_sums[2*c+1]/h_clust_sizes[c]; 
+			h_centroids[2*idx] = clust_datapoint_sums[2*idx]/h_clust_sizes[idx]; 
+			h_centroids[2*idx+1] = clust_datapoint_sums[2*idx+1]/h_clust_sizes[idx]; 
 		}	
 	}
 
@@ -108,11 +108,11 @@ bool Read_from_file(float *h_datapoints, std::string input_file = "points_100.tx
 
 void centroid_init(float* h_datapoints, float* h_centroids, int N){
 	//initalize centroids	
-	for (int c=0; c<K; c++){
+	for (int i=0; i<K; i++){
 		int temp = (N/K);
 		int idx_r = rand()%temp;
-		h_centroids[2*c]= h_datapoints[(c*temp +idx_r)];
-		h_centroids[2*c+1] = h_datapoints[(c*temp +idx_r)+1];
+		h_centroids[2*i]= h_datapoints[(i*temp +idx_r)];
+		h_centroids[2*i+1] = h_datapoints[(i*temp +idx_r)+1];
 	}
 };
 
@@ -216,15 +216,12 @@ int main()
 	}
 
 	
-    //initialize centroids counter for each clust
-   for(int c = 0; c < K; ++c){
+   	//initialize centroids counter for each clust
+   	for(int c = 0; c < K; ++c){
 		  h_clust_sizes[c] = 0;
 	}
 
   
-	Read_from_file(h_datapoints, input_file);
-
-
 	// ROI 1 - transferring data from CPU to GPU
 	auto start_ROI1 = high_resolution_clock::now();
 	cudaMemcpy(d_centroids, h_centroids, D*K*sizeof(float), cudaMemcpyHostToDevice);
@@ -253,7 +250,7 @@ int main()
 		kMeansClusterAssignment<<<(N+TPB-1)/TPB,TPB>>>(d_datapoints, d_clust_assn, d_centroids, N);
 		auto stop = high_resolution_clock::now();
         
-    // get the time of ROI ASSIGNMENT
+    		// get the time of ROI ASSIGNMENT
 		auto duration = duration_cast<microseconds>(stop - start);
 		float temp = duration.count();
 		time_assignments = time_assignments + temp;
@@ -264,14 +261,14 @@ int main()
 		cudaMemcpy(h_clust_assn, d_clust_assn, N*sizeof(int), cudaMemcpyDeviceToHost);
 		auto stop_ROI_cp = high_resolution_clock::now();
         
-    // get the time of ROI CP
+   		// get the time of ROI CP
 		auto duration_ROI_cp = duration_cast<microseconds>(stop_ROI_cp - start_ROI_cp);
 		float temp_ROI_cp = duration_ROI_cp.count();
 		time_copy  = time_copy + temp_ROI_cp;
 		
 		//reset centroids and cluster sizes (will be updated in the next kernel)
-		cudaMemset(d_centroids, 0.0, D*K*sizeof(float));
-		cudaMemset(d_clust_sizes, 0, K*sizeof(int));
+		memset(h_centroids, 0.0, D*K*sizeof(float));
+		memset(h_clust_sizes, 0, K*sizeof(int));
 
 		//call centroid update kernel
 		kMeansCentroidUpdate(h_datapoints, h_clust_assn, h_centroids, h_clust_sizes, N);
@@ -310,8 +307,8 @@ int main()
   
   // print final centroids
 	cout<<"N = "<<N<<",K = "<<K<<", MAX_ITER= "<<MAX_ITER<<".\nThe centroids are:\n";
-    	for(int c=0; c<K; c++){
-        	cout<<"centroid: " <<c<<": (" <<h_centroids[2*c]<<", "<<h_centroids[2*c+1]<<")"<<endl;
+    	for(int l=0; l<K; l++){
+        	cout<<"centroid: " <<l<<": (" <<h_centroids[2*l]<<", "<<h_centroids[2*l+1]<<")"<<endl;
         }
 
 
