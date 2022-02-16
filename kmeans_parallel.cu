@@ -215,12 +215,10 @@ int main()
 		printf("(%f, %f)\n", h_centroids[2*c], h_centroids[2*c+1]);
 	}
 
-	
-   	//initialize centroids counter for each clust
+	//initialize centroids counter for each clust
    	for(int c = 0; c < K; ++c){
 		  h_clust_sizes[c] = 0;
 	}
-
   
 	// ROI 1 - transferring data from CPU to GPU
 	auto start_ROI1 = high_resolution_clock::now();
@@ -229,7 +227,7 @@ int main()
 	cudaMemcpy(d_clust_sizes, h_clust_sizes, K*sizeof(int), cudaMemcpyHostToDevice);
 	auto stop_ROI1 = high_resolution_clock::now();
     
-  // get and print the time of ROI 1
+  	// get and print the time of ROI 1
 	auto duration_ROI1 = duration_cast<microseconds>(stop_ROI1 - start_ROI1);
 	float temp = duration_ROI1.count();
 	cout << "Time taken by transfering centroids, datapoints and cluster's sizes from host to device is : "<< temp << " microseconds" << endl;
@@ -273,12 +271,12 @@ int main()
 		//call centroid update kernel
 		kMeansCentroidUpdate(h_datapoints, h_clust_assn, h_centroids, h_clust_sizes, N);
     
-    // ROI CP2 - transfering data from CPU to GPU
-    auto start_ROI_cp2 = high_resolution_clock::now();
-    cudaMemcpy(d_centroids, h_centroids, D*K*sizeof(float), cudaMemcpyHostToDevice);
-    auto stop_ROI_cp2 = high_resolution_clock::now();
+    		// ROI CP2 - transfering data from CPU to GPU
+    		auto start_ROI_cp2 = high_resolution_clock::now();
+    		cudaMemcpy(d_centroids, h_centroids, D*K*sizeof(float), cudaMemcpyHostToDevice);
+    		auto stop_ROI_cp2 = high_resolution_clock::now();
     
-    // get the time of ROI CP2
+    		// get the time of ROI CP2
 		auto duration_ROI_cp2 = duration_cast<microseconds>(stop_ROI_cp2 - start_ROI_cp2);
 		float temp_ROI_cp2 = duration_ROI_cp2.count();
 		time_copy_2 = time_copy_2 + temp_ROI_cp2;
@@ -288,24 +286,24 @@ int main()
     
 	auto stop_while = high_resolution_clock::now();
     
-  // get and print the time of ROI WHILE
+  	// get and print the time of ROI WHILE
 	auto duration_while = duration_cast<microseconds>(stop_while - start_while);
 	float temp_while = duration_while.count();
 	cout << "Time taken by " << MAX_ITER << " iterations is: "<< temp_while << " microseconds" << endl;
 
-  // print the average time of ROI ASSIGNMENT during each iteration 
+  	// print the average time of ROI ASSIGNMENT during each iteration 
 	time_assignments = time_assignments/MAX_ITER;
 	cout << "Time taken by kMeansClusterAssignment: "<< time_assignments << " microseconds" << endl;
 	
-  // print the average time of ROI CP during each iteration 
+ 	// print the average time of ROI CP during each iteration 
 	time_copy= time_copy/MAX_ITER;
 	cout << "Time taken by transfering centroids and assignments from the device to the host: "<< time_copy << " microseconds" << endl;
 
-  // print the average time of ROI CP during each iteration 
+ 	// print the average time of ROI CP during each iteration 
 	time_copy_2 = time_copy_2/MAX_ITER;
 	cout << "Time taken by transfering centroids and assignments from the device to the host: "<< time_copy_2 << " microseconds" << endl;
   
-  // print final centroids
+  	// print final centroids
 	cout<<"N = "<<N<<",K = "<<K<<", MAX_ITER= "<<MAX_ITER<<".\nThe centroids are:\n";
     	for(int l=0; l<K; l++){
         	cout<<"centroid: " <<l<<": (" <<h_centroids[2*l]<<", "<<h_centroids[2*l+1]<<")"<<endl;
