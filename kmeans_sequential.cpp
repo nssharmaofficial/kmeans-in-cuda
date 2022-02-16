@@ -107,7 +107,7 @@ bool Read_from_file(float* datapoints, std::string input_file = "points_100.txt"
 
 // centroid initialization
 void centroid_init(float* datapoints, float* centroids, int N, int K){
-	for (int c=0; i<K; c++){
+	for (int c=0; c<K; c++){
 		int temp = (N/K);
 		int idx_r = rand()%temp;
 		
