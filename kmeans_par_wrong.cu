@@ -83,8 +83,14 @@ __global__ void kMeansCentroidUpdate(float *d_datapoints, int *d_clust_assn, flo
 	//values within the shared array for the block it is in
 	if(tid == 0)
 	{
-		float b_clust_datapoint_sums[2*K] = {0};
-        	int b_clust_sizes[K] = {0};
+		float *b_clust_datapoint_sums = 0;
+       		int *b_clust_sizes = 0;
+
+		for(int p=0; p<K; p++){
+			b_clust_datapoint_sums[2*p] = 0.0;
+			b_clust_datapoint_sums[2*p+1] = 0.0;
+			b_clust_sizes[p] = 0;
+		}
 		
 		// for each thread (point) in the block
 		for(int j=0; j<blockDim.x; ++j)
@@ -104,14 +110,14 @@ __global__ void kMeansCentroidUpdate(float *d_datapoints, int *d_clust_assn, flo
 		}
 
 		//Now we add the sums to the global centroids and add the counts to the global counts.
-		for(int c=0; c < K; ++c)
+		for(int z=0; z < K; ++z)
 		{
             		// adding the block centroids to a global centroid for each k centroid
-			atomicAdd(&d_centroids[2*c],b_clust_datapoint_sums[2*c]);       // for x coordinate
-           		atomicAdd(&d_centroids[2*c+1],b_clust_datapoint_sums[2*c+1]);   // for y coordinate 
+			atomicAdd(&d_centroids[2*z],b_clust_datapoint_sums[2*z]);       // for x coordinate
+           		atomicAdd(&d_centroids[2*z+1],b_clust_datapoint_sums[2*z+1]);   // for y coordinate 
 
             		// counting num of points inside cluster
-			atomicAdd(&d_clust_sizes[c],b_clust_sizes[c]);
+			atomicAdd(&d_clust_sizes[z],b_clust_sizes[z]);
 		}
 	}
 
