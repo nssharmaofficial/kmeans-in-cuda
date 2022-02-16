@@ -7,7 +7,7 @@
 #include <sstream>      // file-reading
 #include <fstream>      // file-reading
 #include <ctime>     	// for random seeding
-#include <chrono>		// for time measuring
+#include <chrono>	// for time measuring
 
 using namespace std::chrono;
 using namespace std;
@@ -118,7 +118,7 @@ __global__ void kMeansCentroidUpdate(float *d_datapoints, int *d_clust_assn, flo
 	__syncthreads();
 
 	//currently centroids are just sums, so divide by size to get actual centroids
-	if(c < K) // maybe for instead of if 
+	for(int c=0; c < K; c++) // maybe for instead of if(c<K)
 	{	
 		// we are not dividing if there are no points inside the cluster
 		if (d_clust_sizes[c])
@@ -348,9 +348,9 @@ int main()
 
       	// print final centroids
 	cout<<"N = "<<N<<",K = "<<K<<", MAX_ITER= "<<MAX_ITER<<".\nThe centroids are:\n";
-    for(int l=0; l<K; l++){
-        cout<<"centroid: " <<l<<": (" <<h_centroids[2*l]<<", "<<h_centroids[2*l+1]<<")"<<endl;
-    }
+    	for(int c=0; c<K; l++){
+        	cout<<"centroid: " <<c<<": (" <<h_centroids[2*c]<<", "<<h_centroids[2*c+1]<<")"<<endl;
+        }
 
 
 	// Naming for the output files
