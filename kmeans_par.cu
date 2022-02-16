@@ -2,7 +2,7 @@
 // there must be small bug!!! 
 
 #include <stdio.h>
-#include <time.h>
+#include <.h>
 #include <iostream>     // file-reading
 #include <sstream>      // file-reading
 #include <fstream>      // file-reading
@@ -292,7 +292,6 @@ int main()
 	int cur_iter = 0;
 
 	float time_assignments = 0;         // total time of ROI2
-	float time_update = 0;              // total time of ROI3
 	float time_copy_by_device = 0;      // total time of ROI4
 
 	// ROI WHILE - while cycle (duration of all epochs)
@@ -318,7 +317,7 @@ int main()
         
         	// get the time of ROI 2
 		auto duration_ROI2 = duration_cast<microseconds>(stop_ROI2 - start_ROI2);
-		float temp_ROI2 = duration_RO2.count();
+		float temp_ROI2 = duration_ROI2.count();
 		time_copy_by_device = time_copy_by_device + temp_ROI2;
 		
 		//reset centroids and cluster sizes (will be updated in the next kernel)
@@ -348,7 +347,7 @@ int main()
 
       	// print final centroids
 	cout<<"N = "<<N<<",K = "<<K<<", MAX_ITER= "<<MAX_ITER<<".\nThe centroids are:\n";
-    	for(int c=0; c<K; l++){
+    	for(int c=0; c<K; c++){
         	cout<<"centroid: " <<c<<": (" <<h_centroids[2*c]<<", "<<h_centroids[2*c+1]<<")"<<endl;
         }
 
