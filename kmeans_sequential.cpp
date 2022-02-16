@@ -228,7 +228,7 @@ int main()
 		time_assignments = time_assignments + temp;
   
 		// initialize clust_sizes back to zero
-		for(int c=0; c<K; p++){
+		for(int c=0; c<K; c++){
 			clust_sizes[c] = 0;
 		}
 		
