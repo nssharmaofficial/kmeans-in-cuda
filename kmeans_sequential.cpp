@@ -114,6 +114,7 @@ void centroid_init(float* datapoints, float* centroids, int N, int K){
 		// for each cluster choosing randomly the centroid
 		centroids[2*c]= datapoints[(c*temp +idx_r)];
 		centroids[2*c+1] = datapoints[(c*temp +idx_r)+1];
+	}
 };
 
 // size is the number of points in the chosen array, 
