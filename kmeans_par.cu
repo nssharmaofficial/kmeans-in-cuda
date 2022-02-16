@@ -2,7 +2,7 @@
 // there must be small bug!!! 
 
 #include <stdio.h>
-#include <.h>
+#include <time.h>
 #include <iostream>     // file-reading
 #include <sstream>      // file-reading
 #include <fstream>      // file-reading
