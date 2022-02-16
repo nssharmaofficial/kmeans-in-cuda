@@ -13,7 +13,7 @@ using namespace std::chrono;
 using namespace std;
 
 #define D 2 		// Dimension of points
-#define K 8	        // Number of clusters
+#define K 10	        // Number of clusters
 #define TPB 32		// Number of threads per block
 
 
