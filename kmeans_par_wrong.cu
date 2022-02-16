@@ -118,13 +118,13 @@ __global__ void kMeansCentroidUpdate(float *d_datapoints, int *d_clust_assn, flo
 	__syncthreads();
 
 	//currently centroids are just sums, so divide by size to get actual centroids
-	for(int c=0; c < K; c++) // maybe for instead of if(c<K)
+	if(idx<K) // maybe for instead of if(c<K)
 	{	
 		// we are not dividing if there are no points inside the cluster
-		if (d_clust_sizes[c])
+		if (d_clust_sizes[idx])
 		{
-			d_centroids[2*c] = d_centroids[2*c]/d_clust_sizes[c]; 
-			d_centroids[2*c+1] = d_centroids[2*c+1]/d_clust_sizes[c]; 
+			d_centroids[2*idx] = d_centroids[2*idx]/d_clust_sizes[idx]; 
+			d_centroids[2*idx+1] = d_centroids[2*idx+1]/d_clust_sizes[idx]; 
 		}
 	}
 
