@@ -68,8 +68,8 @@ void kMeansCentroidUpdate(float* datapoints, int* clust_assn, float* centroids, 
     }
 
 	// arithmetic mean to get the current updated centroid for each cluster
-	for(int c = 0; c < K; idx++){
-		if(clust_sizes[idx]) // to avoid division by zero
+	for(int c = 0; c < K; c++){
+		if(clust_sizes[c]) // to avoid division by zero
 		{
 			centroids[2*c] = clust_datapoint_sums[2*c]/clust_sizes[c];      // new x coordinate of updated centroid
 			centroids[2*c+1] = clust_datapoint_sums[2*c+1]/clust_sizes[c];  // new y coordinate of updated centroid
@@ -107,13 +107,13 @@ bool Read_from_file(float* datapoints, std::string input_file = "points_100.txt"
 
 // centroid initialization
 void centroid_init(float* datapoints, float* centroids, int N, int K){
-	for (int c=0; i<K; i++){
+	for (int c=0; i<K; c++){
 		int temp = (N/K);
 		int idx_r = rand()%temp;
 		
 		// for each cluster choosing randomly the centroid
-		centroids[2*c]= datapoints[(i*temp +idx_r)];
-		centroids[2*c+1] = datapoints[(i*temp +idx_r)+1];
+		centroids[2*c]= datapoints[(c*temp +idx_r)];
+		centroids[2*c+1] = datapoints[(c*temp +idx_r)+1];
 };
 
 // size is the number of points in the chosen array, 
@@ -236,7 +236,7 @@ int main()
 			centroids[p] = 0.0;
 		}
 
-        	// ROI COPY missing in this case because we dont copy the data from GPU to CPU
+        	// ROI 1 (transfer) and 2 (copy) missing in this case
         
 		// centroid update
 		kMeansCentroidUpdate(datapoints, clust_assn, centroids, clust_sizes, N, K);
@@ -257,8 +257,8 @@ int main()
   
     	// print final centroids
 	cout<<"N = "<<N<<",K = "<<K<<", MAX_ITER= "<<MAX_ITER<<".\nThe centroids are:\n";
-	for(int l=0; l<K; l++){
-        	cout<<"centroid: " <<l<<": (" <<centroids[2*l]<<", "<<centroids[2*l+1]<<")"<<endl;
+	for(int c=0; c<K; c++){
+        	cout<<"centroid: " <<c<<": (" <<centroids[2*c]<<", "<<centroids[2*c+1]<<")"<<endl;
    	}
 
 	// Naming for the output files
