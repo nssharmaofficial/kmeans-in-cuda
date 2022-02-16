@@ -1,6 +1,3 @@
-// kMeansCentroidUpdate NOT working properly, 
-// there must be small bug!!! 
-
 #include <stdio.h>
 #include <time.h>
 #include <iostream>     // file-reading
