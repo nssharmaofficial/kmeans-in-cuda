@@ -159,13 +159,17 @@ void input_user(std::string* infile_name, int* num, int* epochs)
     {
         case 100: *infile_name = "points_100.txt";
         break;
-        case 1000: *infile_name = "points_1_000.txt";
+	case 500: *infile_name = "points_500.txt";
         break;
-	case 1024: *infile_name = "points_1024.txt";
+        case 1000: *infile_name = "points_1_000.txt";
         break;
         case 10000: *infile_name = "points_10_000.txt";
         break;
+	case 50000: *infile_name = "points_50_000.txt";
+        break;
         case 100000: *infile_name = "points_100_000.txt";
+        break;
+	case 250000: *infile_name = "points_250_000.txt";
         break;
         case 1000000: *infile_name = "points_1_000_000.txt";
         break;
