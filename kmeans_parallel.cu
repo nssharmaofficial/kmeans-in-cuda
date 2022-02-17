@@ -220,16 +220,16 @@ int main()
 		  h_clust_sizes[c] = 0;
 	}
   
-	// ROI 1 - transferring data from CPU to GPU
-	auto start_ROI1 = high_resolution_clock::now();
+	// ROI CP0 - transferring data from CPU to GPU
+	auto start_ROI_cp0 = high_resolution_clock::now();
 	cudaMemcpy(d_centroids, h_centroids, D*K*sizeof(float), cudaMemcpyHostToDevice);
 	cudaMemcpy(d_datapoints, h_datapoints, D*N*sizeof(float), cudaMemcpyHostToDevice);
 	cudaMemcpy(d_clust_sizes, h_clust_sizes, K*sizeof(int), cudaMemcpyHostToDevice);
-	auto stop_ROI1 = high_resolution_clock::now();
+	auto stop_ROI_cp0 = high_resolution_clock::now();
     
-  	// get and print the time of ROI 1
-	auto duration_ROI1 = duration_cast<microseconds>(stop_ROI1 - start_ROI1);
-	float temp = duration_ROI1.count();
+  	// get and print the time of ROI CP0
+	auto duration_ROI_cp0 = duration_cast<microseconds>(stop_ROI_cp0 - start_ROI_cp0);
+	float temp = duration_ROI_cp0.count();
 	cout << "Time taken by transfering centroids, datapoints and cluster's sizes from host to device is : "<< temp << " microseconds" << endl;
 
 	int cur_iter = 0;
