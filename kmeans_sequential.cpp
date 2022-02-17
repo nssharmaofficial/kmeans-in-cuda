@@ -239,7 +239,7 @@ int main()
 			centroids[p] = 0.0;
 		}
 
-        	// ROI 1 (transfer) and 2 (copy) missing in this case
+        	// ROI CP
         
 		// centroid update
 		kMeansCentroidUpdate(datapoints, clust_assn, centroids, clust_sizes, N, K);
