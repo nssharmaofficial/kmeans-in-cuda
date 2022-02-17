@@ -1,5 +1,5 @@
 // kMeansCentroidUpdate NOT working properly, 
-// there must be small bug!!! 
+// there must be some bug!!! 
 
 #include <stdio.h>
 #include <time.h>
