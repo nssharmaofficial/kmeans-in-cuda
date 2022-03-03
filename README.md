@@ -20,6 +20,4 @@ parallel compiler line on linux:
 nvcc kmeans_parallel.cu -o kmeans_parallel
 
 
-by Brisudova Natasa
-   Graziuso Natalia
-   Lazzeri Sean Cesare
+by Brisudova Natasa, Graziuso Natalia, Lazzeri Sean Cesare
