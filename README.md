@@ -1,4 +1,7 @@
 # K-Means-Parallel-Computing
+
+![](https://api.visitorbadge.io/api/VisitorHit?user=natasabrisudova&repo=K-Means-Parallel-Computing&countColor=%237B1E7A)
+
 K-Means algorithm parallelized in CUDA
 
 Before trying to execute both sequential and parallel version of
